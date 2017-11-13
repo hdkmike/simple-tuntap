@@ -21,13 +21,24 @@ ip route del 192.168.40.2/32 dev tun0
 ip link set tun0 down
 ```
 
+# Routing
+
+## Enable Routing (on Linux)
+Run `sysctl -w net.ipv4.ip_forward=1` to temporarily enable routing
+Edit `/etc/sysctl.conf` with the line `net.ipv4.ip_forward = 1` to make routing persistant across reboots
+
+## Disable Routing
+Run `sysctl -w net.ipv4.ip_forward=0` to temporarily enable routing
+Edit `/etc/sysctl.conf` with the line `net.ipv4.ip_forward = 0` to make routing persistant across reboots
+
 # Sample programs
 
 ## Echo
-Simply echos back the data received by the tun to the sender
+Simply echos back the data received by the tun to the sender but swaps the IP src and dst.
 
 * `ping 192.168.40.2` will result in a reply
     * It will keep up with a flood ping (`sudo ping -f 192.168.40.2`) but buffers slightly
+    * Ping won't work for non-local pings due to the "dumb" echo handler. It doesn't switch the echo/reply types.
 * netcat will work with UDP
     * Set up one terminal running `nc -u -l 1234`
     * Set up another terminal running `nc -u 192.168.40.2 1234`
